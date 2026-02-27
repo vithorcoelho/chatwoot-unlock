@@ -41,4 +41,8 @@ copy_file() {
 copy_file "app/views/super_admin/settings/show.html.erb"
 copy_file "db/seeds.rb"
 
+echo "[unlock] running bundle exec rails db:seed"
+cd /app
+bundle exec rails db:seed
+
 echo "[unlock] done"

@@ -15,9 +15,11 @@ No startup do container:
 2. O script baixa e aplica:
    - `app/views/super_admin/settings/show.html.erb`
    - `db/seeds.rb`
-3. Em seguida, o container executa o comando normal (`rails` ou `sidekiq`).
+3. O script executa `bundle exec rails db:seed`.
+4. Em seguida, o container executa o comando normal (`rails` ou `sidekiq`).
 
 O `unlock.sh` detecta automaticamente `curl` ou `wget` dentro do container. Isso é importante porque imagens Alpine do Chatwoot normalmente têm `wget`, mas podem não ter `curl`.
+Ele também aplica os arquivos e roda o seed imediatamente, sem depender de comando manual adicional.
 
 ## EntryPoint mínimo (Rails)
 
@@ -93,3 +95,4 @@ entrypoint:
 - Requer internet no container para acessar `raw.githubusercontent.com`.
 - Se o GitHub estiver indisponível, o startup pode falhar.
 - O comando recomendado para Alpine é com `wget -qO-`, não com `curl`.
+- O container precisa ter `bundle exec rails` funcional para que o seed seja executado com sucesso.
