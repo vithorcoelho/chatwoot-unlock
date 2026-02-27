@@ -59,10 +59,11 @@ docker exec chatwoot-plus-prod-rails-1 sh -lc 'wget -qO- "https://raw.githubuser
 
 ## Usar tag fixa (recomendado em produção)
 
-Troque `main` por uma tag:
+Troque `main` por uma tag ou commit:
 
 ```text
 https://raw.githubusercontent.com/vithorcoelho/chatwoot-unlock/v1.0.0/unlock.sh
+https://raw.githubusercontent.com/vithorcoelho/chatwoot-unlock/<commit>/unlock.sh
 ```
 
 ## Parâmetros opcionais

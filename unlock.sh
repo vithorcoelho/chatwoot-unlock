@@ -6,16 +6,16 @@ UNLOCK_REF="${UNLOCK_REF:-main}"
 BASE_URL="https://raw.githubusercontent.com/${UNLOCK_REPO}/${UNLOCK_REF}"
 
 download_file() {
-  url="$1"
-  dst_path="$2"
+  file_url="$1"
+  file_out="$2"
 
   if command -v curl >/dev/null 2>&1; then
-    curl -fsSL "${url}" -o "${dst_path}"
+    curl -fsSL "${file_url}" -o "${file_out}"
     return 0
   fi
 
   if command -v wget >/dev/null 2>&1; then
-    wget -qO "${dst_path}" "${url}"
+    wget -qO "${file_out}" "${file_url}"
     return 0
   fi
 
