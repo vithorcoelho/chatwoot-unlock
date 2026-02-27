@@ -11,11 +11,13 @@ Objetivo: aplicar patches no container do Chatwoot direto do GitHub, com configu
 
 No startup do container:
 
-1. `entrypoint` faz `curl` do `unlock.sh` do GitHub.
+1. `entrypoint` baixa o `unlock.sh` do GitHub.
 2. O script baixa e aplica:
    - `app/views/super_admin/settings/show.html.erb`
    - `db/seeds.rb`
 3. Em seguida, o container executa o comando normal (`rails` ou `sidekiq`).
+
+O `unlock.sh` detecta automaticamente `curl` ou `wget` dentro do container. Isso é importante porque imagens Alpine do Chatwoot normalmente têm `wget`, mas podem não ter `curl`.
 
 ## EntryPoint mínimo (Rails)
 
@@ -25,7 +27,7 @@ entrypoint:
   - -lc
   - |
     set -e
-    curl -fsSL "https://raw.githubusercontent.com/vithorcoelho/chatwoot-unlock/main/unlock.sh" | sh
+    wget -qO- "https://raw.githubusercontent.com/vithorcoelho/chatwoot-unlock/main/unlock.sh" | sh
     exec docker/entrypoints/rails.sh bundle exec rails s -p 3000 -b 0.0.0.0
 ```
 
@@ -37,8 +39,22 @@ entrypoint:
   - -lc
   - |
     set -e
-    curl -fsSL "https://raw.githubusercontent.com/vithorcoelho/chatwoot-unlock/main/unlock.sh" | sh
+    wget -qO- "https://raw.githubusercontent.com/vithorcoelho/chatwoot-unlock/main/unlock.sh" | sh
     exec bundle exec sidekiq -C config/sidekiq.yml
+```
+
+## Execução manual no container
+
+Para imagens que já tenham `curl`:
+
+```bash
+docker exec chatwoot-plus-prod-rails-1 sh -lc 'curl -fsSL "https://raw.githubusercontent.com/vithorcoelho/chatwoot-unlock/main/unlock.sh" | sh'
+```
+
+Para imagens Alpine que só tenham `wget`:
+
+```bash
+docker exec chatwoot-plus-prod-rails-1 sh -lc 'wget -qO- "https://raw.githubusercontent.com/vithorcoelho/chatwoot-unlock/main/unlock.sh" | sh'
 ```
 
 ## Usar tag fixa (recomendado em produção)
@@ -66,16 +82,8 @@ entrypoint:
     set -e
     export UNLOCK_REPO=vithorcoelho/chatwoot-unlock
     export UNLOCK_REF=v1.0.0
-    curl -fsSL "https://raw.githubusercontent.com/vithorcoelho/chatwoot-unlock/main/unlock.sh" | sh
+    wget -qO- "https://raw.githubusercontent.com/vithorcoelho/chatwoot-unlock/main/unlock.sh" | sh
     exec docker/entrypoints/rails.sh bundle exec rails s -p 3000 -b 0.0.0.0
-```
-
-## Bash manual (opcional)
-
-Se quiser rodar manualmente no host:
-
-```bash
-docker exec chatwoot-rails-1 sh -lc 'curl -fsSL "https://raw.githubusercontent.com/vithorcoelho/chatwoot-unlock/main/unlock.sh" | sh'
 ```
 
 ## Observações
@@ -83,3 +91,4 @@ docker exec chatwoot-rails-1 sh -lc 'curl -fsSL "https://raw.githubusercontent.c
 - Não precisa manter `.sh` local no servidor.
 - Requer internet no container para acessar `raw.githubusercontent.com`.
 - Se o GitHub estiver indisponível, o startup pode falhar.
+- O comando recomendado para Alpine é com `wget -qO-`, não com `curl`.
