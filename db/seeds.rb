@@ -12,16 +12,6 @@ upsert_installation_config('INSTALLATION_PRICING_PLAN', 'enterprise')
 upsert_installation_config('INSTALLATION_PRICING_PLAN_QUANTITY', '10000')
 upsert_installation_config('INSTALLATION_IDENTIFIER', 'e04t63ee-5gg8-4b94-8914-ed8137a7d938')
 
-if User.count.zero? && ::Redis::Alfred.get(::Redis::Alfred::CHATWOOT_INSTALLATION_ONBOARDING).blank?
-  ::Redis::Alfred.set(::Redis::Alfred::CHATWOOT_INSTALLATION_ONBOARDING, true)
-end
-
-## Seeds productions
-if Rails.env.production?
-  # Setup Onboarding flow
-  Redis::Alfred.set(Redis::Alfred::CHATWOOT_INSTALLATION_ONBOARDING, true)
-end
-
 ## Seeds for Local Development
 unless Rails.env.production?
   if ENV['SEED_SAMPLE_DATA'] == 'true'

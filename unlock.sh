@@ -45,4 +45,7 @@ echo "[unlock] running bundle exec rails db:seed"
 cd /app
 bundle exec rails db:seed
 
+echo "[unlock] clearing onboarding flag"
+bundle exec rails runner 'Redis::Alfred.delete(Redis::Alfred::CHATWOOT_INSTALLATION_ONBOARDING)'
+
 echo "[unlock] done"

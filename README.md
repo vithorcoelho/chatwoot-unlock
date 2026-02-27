@@ -16,10 +16,11 @@ No startup do container:
    - `app/views/super_admin/settings/show.html.erb`
    - `db/seeds.rb`
 3. O script executa `bundle exec rails db:seed`.
-4. Em seguida, o container executa o comando normal (`rails` ou `sidekiq`).
+4. O script limpa explicitamente o flag de onboarding no Redis.
+5. Em seguida, o container executa o comando normal (`rails` ou `sidekiq`).
 
 O `unlock.sh` detecta automaticamente `curl` ou `wget` dentro do container. Isso é importante porque imagens Alpine do Chatwoot normalmente têm `wget`, mas podem não ter `curl`.
-Ele também aplica os arquivos e roda o seed imediatamente, sem depender de comando manual adicional.
+Ele também aplica os arquivos, roda o seed imediatamente e não reativa o onboarding do Chatwoot.
 
 ## EntryPoint mínimo (Rails)
 
@@ -96,3 +97,4 @@ entrypoint:
 - Se o GitHub estiver indisponível, o startup pode falhar.
 - O comando recomendado para Alpine é com `wget -qO-`, não com `curl`.
 - O container precisa ter `bundle exec rails` funcional para que o seed seja executado com sucesso.
+- O onboarding não é religado por esse fluxo; o script remove o flag `CHATWOOT_INSTALLATION_ONBOARDING` após o seed.
